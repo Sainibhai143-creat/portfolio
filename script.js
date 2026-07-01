@@ -1,192 +1,32 @@
-/* ===============================
-   AI PORTFOLIO - SCRIPT.JS
-   Optimized & Error-Free Version
-=================================*/
-
 // -----------------------------
-// Typing Animation
+// 100% WORKING - Smooth Anchor Scroll
 // -----------------------------
-const text = [
-    "Prompt Engineer",
-    "AI Automation Developer",
-    "Computer Science Student",
-    "Building Real-World AI Systems"
-];
-
-let textIndex = 0;
-let charIndex = 0;
-let deleting = false;
-
-const typing = document.getElementById("typing");
-
-function typeEffect() {
-    if (!typing) return;
-
-    let current = text[textIndex];
-
-    if (!deleting) {
-        typing.innerHTML = current.substring(0, charIndex++);
-        if (charIndex > current.length) {
-            deleting = true;
-            setTimeout(typeEffect, 1200); // Poora text dikhne ke baad pause
-            return;
-        }
-    } else {
-        typing.innerHTML = current.substring(0, charIndex--);
-        if (charIndex === 0) { // FIXED: < 0 ki jagah exactly 0 par switch hoga
-            deleting = false;
-            textIndex++;
-            if (textIndex >= text.length) {
-                textIndex = 0;
-            }
-        }
-    }
-
-    setTimeout(typeEffect, deleting ? 40 : 90);
-}
-
-// Animation start karein
-typeEffect();
-
-
-// -----------------------------
-// Navbar Shadow & Background Change
-// -----------------------------
-window.addEventListener("scroll", () => {
-    const header = document.querySelector("header");
-    if (!header) return;
-
-    if (window.scrollY > 80) {
-        header.style.background = "rgba(7, 11, 23, 0.95)";
-        header.style.boxShadow = "0 8px 30px rgba(0, 0, 0, 0.35)";
-    } else {
-        header.style.background = "rgba(255, 255, 255, 0.05)";
-        header.style.boxShadow = "none";
-    }
-});
-
-
-// -----------------------------
-// Top Scroll Progress Bar
-// -----------------------------
-const progress = document.createElement("div");
-progress.style.position = "fixed";
-progress.style.top = "0";
-progress.style.left = "0";
-progress.style.height = "4px";
-progress.style.width = "0%";
-progress.style.zIndex = "99999";
-progress.style.background = "linear-gradient(90deg, #3B82F6, #06B6D4, #9333EA)";
-document.body.appendChild(progress);
-
-window.addEventListener("scroll", () => {
-    const total = document.documentElement.scrollHeight - window.innerHeight;
-    if (total > 0) {
-        const current = (window.scrollY / total) * 100;
-        progress.style.width = current + "%";
-    }
-});
-
-
-// -----------------------------
-// Fade-In On Scroll Animation (Intersection Observer)
-// -----------------------------
-const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            entry.target.style.opacity = "1";
-            entry.target.style.transform = "translateY(0)";
-        }
-    });
-}, {
-    threshold: 0.15
-});
-
-document.querySelectorAll("section").forEach(section => {
-    section.style.opacity = "0";
-    section.style.transform = "translateY(50px)";
-    section.style.transition = "opacity 0.8s ease, transform 0.8s ease";
-    observer.observe(section);
-});
-
-
-// -----------------------------
-// Smooth Anchor Scroll
-// -----------------------------
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+document.querySelectorAll('nav ul li a, .buttons a').forEach(anchor => {
     anchor.addEventListener("click", function (e) {
         const href = this.getAttribute("href");
         
-        // Agar link sirf '#' hai (jaise Home button), toh top par smoothly scroll karein
-        if (href === "#") {
+        // Agar link khali hai ya sirf '#' hai (jaise Home), toh top par scroll karein
+        if (href === "#" || href === "") {
             e.preventDefault();
             window.scrollTo({ top: 0, behavior: "smooth" });
             return;
         }
 
-        const target = document.querySelector(href); // FIXED: Invalid selector crash prevented
-        if (target) {
-            e.preventDefault();
-            target.scrollIntoView({
-                behavior: "smooth"
-            });
+        // Target section ko check karein
+        if (href.startsWith("#")) {
+            const target = document.querySelector(href);
+            if (target) {
+                e.preventDefault(); // Default jump ko rokein
+                
+                // Header ki height ko minus karein taaki heading chhup na jaye
+                const headerHeight = document.querySelector("header").offsetHeight || 80;
+                const targetPosition = target.getBoundingClientRect().top + window.scrollY - headerHeight;
+
+                window.scrollTo({
+                    top: targetPosition,
+                    behavior: "smooth"
+                });
+            }
         }
     });
 });
-
-
-// -----------------------------
-// Project Cards Hover Glow Effect
-// -----------------------------
-const cards = document.querySelectorAll(".project-card");
-
-cards.forEach(card => {
-    card.addEventListener("mousemove", (e) => {
-        const rect = card.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-
-        card.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(59, 130, 246, 0.20), rgba(255, 255, 255, 0.05))`;
-    });
-
-    card.addEventListener("mouseleave", () => {
-        card.style.background = "rgba(255, 255, 255, 0.05)";
-    });
-});
-
-
-// -----------------------------
-// Scroll To Top Button
-// -----------------------------
-const topBtn = document.getElementById("topBtn");
-
-if (topBtn) {
-    window.addEventListener("scroll", () => {
-        if (window.scrollY > 400) {
-            topBtn.style.display = "block";
-        } else {
-            topBtn.style.display = "none";
-        }
-    });
-
-    topBtn.addEventListener("click", () => {
-        window.scrollTo({
-            top: 0,
-            behavior: "smooth"
-        });
-    });
-}
-
-
-// -----------------------------
-// Contact Form Submission
-// -----------------------------
-const form = document.querySelector(".contact-form");
-
-if (form) {
-    form.addEventListener("submit", (e) => {
-        e.preventDefault();
-        alert("Thank you for contacting me, Ravi! I will get back to you soon.");
-        form.reset();
-    });
-}
